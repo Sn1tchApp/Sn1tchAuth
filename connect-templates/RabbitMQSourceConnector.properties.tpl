@@ -1,0 +1,10 @@
+name=rabbitmq
+tasks.max=1
+connector.class=com.github.jcustenborder.kafka.connect.rabbitmq.RabbitMQSourceConnector
+rabbitmq.host=172.16.4.62
+rabbitmq.prefetch.count=500
+rabbitmq.automatic.recovery.enabled=true
+rabbitmq.network.recovery.interval.ms=10000
+rabbitmq.topology.recovery.enabled=true
+rabbitmq.queue=security
+kafka.topic=security

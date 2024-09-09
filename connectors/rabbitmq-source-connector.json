@@ -1,0 +1,14 @@
+{
+    "name": "rabbitmq-source-connector",
+    "config": {
+      "connector.class": "com.github.jcustenborder.kafka.connect.rabbitmq.RabbitMQSourceConnector",
+      "tasks.max": "1",
+      "kafka.topic": "security",
+      "rabbitmq.queue": "security",
+      "rabbitmq.host": "rabbitmq",
+      "rabbitmq.port": "5672",
+      "rabbitmq.username": "sn1tchapp",
+      "rabbitmq.password": "sn1tchapp",
+      "rabbitmq.virtualHost": "/"
+    }
+  }

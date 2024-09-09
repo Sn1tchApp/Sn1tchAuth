@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: 'confluentinc/cp-zookeeper:7.4.0'
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+      ALLOW_ANONYMOUS_LOGIN: yes
+    ports:
+      - "2181:2181"
+  kafka:
+    image: 'confluentinc/cp-kafka:7.4.0'
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_CREATE_TOPICS: "connect-config:connect-offsets:connect-status"
+      #KAFKA_BROKER_ID: 1
+      #KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      #KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      #KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      #KAFKA_LOG_DIRS: /var/lib/kafka/data
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      #KAFKA_KRAFT_MODE: 'true'
+      #KAFKA_CONTROLLER_QUORUM_VOTERS: '1@localhost:9092'
+    ports:
+      - "9092:9092"
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui
+    container_name: kafka-ui
+    depends_on:
+      - kafka
+      - zookeeper
+    ports:
+      - "8080:8080"
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=interoperabilidade2
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+      - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
+
+  connect:
+    image: 'confluentinc/cp-kafka-connect:7.4.0'
+    depends_on:
+      - kafka
+     # - elasticsearch
+    ports:
+      - "8083:8083"
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: 'kafka:9092'
+      CONNECT_REST_PORT: 8083
+      #CONNECT_GROUP_ID: 'kafka-connect'
+      CONNECT_GROUP_ID: 'quickstart'
+      CONNECT_CONFIG_STORAGE_TOPIC: 'connect-config'
+      CONNECT_OFFSET_STORAGE_TOPIC: 'connect-offsets'
+      CONNECT_STATUS_STORAGE_TOPIC: 'connect-status'
+      CONNECT_KEY_CONVERTER: 'org.apache.kafka.connect.storage.StringConverter'
+      CONNECT_VALUE_CONVERTER: 'org.apache.kafka.connect.storage.StringConverter'
+      CONNECT_PLUGIN_PATH: '/usr/share/java'
+      CONNECT_REST_ADVERTISED_HOST_NAME: 'connect'
+      CONNECT_LOG4J_LOGGERS: 'org.apache.kafka.connect.runtime.WorkerSourceTask=DEBUG, org.apache.kafka.connect.runtime.WorkerSinkTask=DEBUG'
+    volumes:
+      - connect_data:/var/lib/connect/data
+
+  rabbitmq:
+    image: 'rabbitmq:3-management'
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: sn1tchapp
+      RABBITMQ_DEFAULT_PASS: sn1tchapp
+      RABBITMQ_DEFAULT_VHOST: /
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+
+#  elasticsearch:
+#    image: 'docker.elastic.co/elasticsearch/elasticsearch:7.17.0'
+#    environment:
+#      - discovery.type=single-node
+#    ports:
+#      - "9200:9200"
+#    volumes:
+#      - esdata:/usr/share/elasticsearch/data
+
+#  kibana:
+#    image: 'docker.elastic.co/kibana/kibana:7.17.0'
+#    ports:
+#      - "5601:5601"
+#    environment:
+#      ELASTICSEARCH_URL: http://elasticsearch:9200
+#    depends_on:
+#      - elasticsearch
+
+volumes:
+  rabbitmq_data:
+  kafka_data:
+  connect_data:
+  #esdata:
