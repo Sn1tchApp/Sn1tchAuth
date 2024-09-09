@@ -27,13 +27,22 @@ docker build -t connect .
 ## Habilitar MQTT no rabbitmq
 
 docker-compose up -d rabbitmq
+
+'''
 docker exec -it interoperabilidade2-rabbitmq-1 rabbitmq-plugins enable rabbitmq_mqtt
+
 docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqctl add_user guest guest
+
 docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqctl add_user producer sn1tchapp
+
 docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqctl set_permissions -p / guest ".*" ".*" ".*"
+
 docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqctl set_permissions -p / producer ".*" ".*" ".*"
+
 docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqadmin -u sn1tchapp -p sn1tchapp declare queue name=security durable=true
+
 docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqadmin -u sn1tchapp -p sn1tchapp declare binding source="amq.topic" destination_type="queue" destination="security" routing_key=security
+'''
 
 ## Levantar kafka para criação dos tópicos necessários para o connector rabbitmq
 
