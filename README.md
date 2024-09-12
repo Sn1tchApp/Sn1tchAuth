@@ -37,19 +37,26 @@ make install-docker-compose
 
     chmod +x /usr/local/bin/docker-compose
 
-### Criar imagem docker do conector
+
+## Criar ambiente de uma vez
+
+make all
+
+## Caso tenha interesse de criar passo a passo, executar a sequencia abaixo
+
+### 1 - Criar imagem docker do conector
 
 make build-connector
 
 	docker build -t connect ./connectors/kafka-connect-rabbitmq/
 
-### Criar imagem do docker analyser
+### 2 - Criar imagem do docker analyser
 
 make build-analyser
 
     docker build -t analyser ./analyser
 
-### Habilitar MQTT no rabbitmq
+### 3 - Habilitar MQTT no rabbitmq
 
 make configure-mqtt
 
@@ -63,7 +70,7 @@ make configure-mqtt
 	docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqadmin -u sn1tchapp -p sn1tchapp declare queue name=security durable=true
 	docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqadmin -u sn1tchapp -p sn1tchapp declare binding source="amq.topic" destination_type="queue" destination="security" routing_key=security
 
-### Levantar kafka para criação dos tópicos necessários para o connector rabbitmq
+### 4 - Levantar kafka para criação dos tópicos necessários para o connector rabbitmq
 
 make configure-kafka
 
@@ -80,13 +87,13 @@ make configure-kafka
     docker exec -it interoperabilidade2-kafka-1 kafka-topics --bootstrap-server localhost:9092 --create --topic security --partitions 1 --replication-factor 1 --config cleanup.policy=compact
 
 
-### Verifique se os tópicos estão criados
+### 5 - Verifique se os tópicos estão criados
 
 make check-topics-kafka
 
     docker exec -it interoperabilidade2-kafka-1 kafka-topics --list --bootstrap-server localhost:9092
 
-### Subir demais componentes do projeto
+### 6 - Subir demais componentes do projeto
 
 make start-connect
 

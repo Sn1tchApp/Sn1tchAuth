@@ -42,3 +42,20 @@ test-password-spray:
 
 test-brute-force:
 	python3 scripts/testes/test_brute_force.py
+
+test-log-generate:
+	python3 scripts/testes/test_simula_geracao.py
+
+send-logs:
+	python3 coletor/log_colector.py
+
+all:
+	make build-connector
+	make build-analyser
+	make configure-mqtt
+	make configure-kafka
+	make check-topics-kafka
+	make start-connect
+
+
+
