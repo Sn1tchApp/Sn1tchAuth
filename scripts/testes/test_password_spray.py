@@ -2,7 +2,8 @@ import paho.mqtt.client as mqtt
 import time
 
 # Configurações do MQTT
-MQTT_HOST = '172.16.4.62'
+MQTT_HOST = 'localhost'
+#MQTT_HOST = '18.231.148.22'
 MQTT_PORT = 1883
 MQTT_TOPIC = 'security'
 MQTT_USER = 'producer'
@@ -49,11 +50,21 @@ client.loop_start()
 # Enviar mensagens de teste
 def send_test_messages():
     messages = [
-        "Test message 1",
-        "Test message 2",
-        "Test message 3",
-        "Test message 4",
-        "Test message 5"
+        "LNXEXEC-02 sshd[23150]: Failed password for julio from 172.24.0.69 port 47370 ssh2",
+        "LNXEXEC-01 sshd[1761]: Failed password for julia from 172.24.0.69 port 47640 ssh2",
+        "LNXEXEC-01 sshd[1761]: Failed password for fernando from 172.24.0.69 port 47640 ssh2",
+        "LNXEXEC-02 sshd[9525]: Failed password for francisco from 172.24.0.69 port 46684 ssh2",
+        "LNXEXEC-01 sshd[7741]: Failed password for marcos from 172.24.0.69 port 36296 ssh2",
+        "LNXEXEC-01 sshd[7741]: Failed password for michele from 172.24.0.69 port 36296 ssh2",
+        "LNXEXEC-01 sshd[32279]: Failed password for ferdando_bezerra from 172.24.0.69 port 44606 ssh2",
+        "LNXEXEC-01 sshd[31418]: Failed password for paulo from 172.24.0.69 port 37244 ssh2",
+        "LNXEXEC-01 sshd[31418]: Failed password for pedro_eugenio from 172.24.0.69 port 37244 ssh2",
+        "LNXEXEC-01 sshd[31418]: Failed password for emanuel from 172.24.0.69 port 37244 ssh2",
+        "LNXEXEC-01 sshd[31418]: Failed password for pedro_trajano from 172.24.0.69 port 37244 ssh2",
+        "LNXEXEC-01 sshd[31418]: Failed password for henrique from 172.24.0.69 port 37244 ssh2",
+        "LNXEXEC-01 sshd[31418]: Failed password for fernando_coelho from 172.24.0.69 port 37244 ssh2",
+        "srv01 sshd[8830]: Failed password for invalid marcos kkls from 172.24.30.40 port 50734 ssh2",
+        "srv01 sshd[8830]: Failed password for invalid michele jkpl from 172.24.30.40 port 50734 ssh2"
     ]
 
     for msg in messages:

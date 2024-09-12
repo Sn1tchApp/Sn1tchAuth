@@ -1,17 +1,13 @@
-# interoperabilidade2
+# Interoperabilidade2
 Atividade da aula de interoperabilidade 2
 
-## Instalar e inicializar docker e docker-compose
+## Para visualizar os alertas se cadastrar no grupo do Telegram
 
-yum install -y docker
+t.me/sn1tch_auth
 
-systemctl enable docker
+## Instalar em um amazon linux
 
-systemctl start docker
-
-curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-
-chmod +x /usr/local/bin/docker-compose
+Criar máquina amazon linux
 
 ## Clonar repositório e executar projeto
 
@@ -19,62 +15,83 @@ git clone https://github.com/Sn1tchApp/interoperabilidade2.git
 
 cd /path/to/repo
 
-## Criar imagem docker do conector
+## Instalar Make
 
-cd connectors/kafka-connect-rabbitmq/
-docker build -t connect .
+sudo yum install make
 
-## Habilitar MQTT no rabbitmq
+## Executar a primeira vez
 
-docker-compose up -d rabbitmq
+### Instalar e inicializar docker e docker-compose
 
-'''
-docker exec -it interoperabilidade2-rabbitmq-1 rabbitmq-plugins enable rabbitmq_mqtt
+make install-docker
 
-docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqctl add_user guest guest
+    yum install -y docker
 
-docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqctl add_user producer sn1tchapp
+    systemctl enable docker
 
-docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqctl set_permissions -p / guest ".*" ".*" ".*"
+    systemctl start docker
 
-docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqctl set_permissions -p / producer ".*" ".*" ".*"
+make install-docker-compose
 
-docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqadmin -u sn1tchapp -p sn1tchapp declare queue name=security durable=true
+    curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
 
-docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqadmin -u sn1tchapp -p sn1tchapp declare binding source="amq.topic" destination_type="queue" destination="security" routing_key=security
-'''
+    chmod +x /usr/local/bin/docker-compose
 
-## Levantar kafka para criação dos tópicos necessários para o connector rabbitmq
+### Criar imagem docker do conector
 
-docker-compose up -d zookeeper kafka kafka-ui
+build-connector
 
-## Criar os tópicos com a política correta (compact)
+	cd connectors/kafka-connect-rabbitmq/
+	docker build -t connect .
+    cd ../../
 
-docker exec -it interoperabilidade2-kafka-1 kafka-topics --bootstrap-server localhost:9092 --create --topic connect-offsets \
-  --partitions 1 --replication-factor 1 \
-  --config cleanup.policy=compact
+### Habilitar MQTT no rabbitmq
 
-docker exec -it interoperabilidade2-kafka-1 kafka-topics --bootstrap-server localhost:9092 --create --topic connect-config \
-  --partitions 1 --replication-factor 1 \
-  --config cleanup.policy=compact
+make configure-mqtt
 
-docker exec -it interoperabilidade2-kafka-1 kafka-topics --bootstrap-server localhost:9092 --create --topic connect-status \
-  --partitions 1 --replication-factor 1 \
-  --config cleanup.policy=compact
+    docker-compose up -d rabbitmq
+	sleep 30
+	docker exec -it interoperabilidade2-rabbitmq-1 rabbitmq-plugins enable rabbitmq_mqtt
+	docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqctl add_user guest guest
+	docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqctl add_user producer sn1tchapp
+	docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqctl set_permissions -p / guest ".*" ".*" ".*"
+	docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqctl set_permissions -p / producer ".*" ".*" ".*"
+	docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqadmin -u sn1tchapp -p sn1tchapp declare queue name=security durable=true
+	docker exec -it interoperabilidade2-rabbitmq-1 rabbitmqadmin -u sn1tchapp -p sn1tchapp declare binding source="amq.topic" destination_type="queue" destination="security" routing_key=security
 
-docker exec -it interoperabilidade2-kafka-1 kafka-topics --bootstrap-server localhost:9092 --create --topic security \
-  --partitions 1 --replication-factor 1 \
-  --config cleanup.policy=compact
+### Levantar kafka para criação dos tópicos necessários para o connector rabbitmq
 
-## Verifique se os tópicos estão criados
+make configure-kafka
 
-docker exec -it interoperabilidade2-kafka-1 kafka-topics --list --bootstrap-server localhost:9092
+    docker-compose up -d zookeeper kafka kafka-ui
 
-## Subir demais componentes do projeto
+    ## Criar os tópicos com a política correta (compact)
 
-docker-compose up -d
+    docker exec -it interoperabilidade2-kafka-1 kafka-topics --bootstrap-server localhost:9092 --create --topic connect-offsets --partitions 1 -replication-factor 1 --config cleanup.policy=compact
 
-## Executar coleta de log
+    docker exec -it interoperabilidade2-kafka-1 kafka-topics --bootstrap-server localhost:9092 --create --topic connect-config --partitions 1 --replication-factor 1 --config cleanup.policy=compact
+
+    docker exec -it interoperabilidade2-kafka-1 kafka-topics --bootstrap-server localhost:9092 --create --topic connect-status --partitions 1 --replication-factor 1 --config cleanup.policy=compact
+
+    docker exec -it interoperabilidade2-kafka-1 kafka-topics --bootstrap-server localhost:9092 --create --topic security --partitions 1 --replication-factor 1 --config cleanup.policy=compact
+
+
+### Verifique se os tópicos estão criados
+
+make check-topics-kafka
+
+    docker exec -it interoperabilidade2-kafka-1 kafka-topics --list --bootstrap-server localhost:9092
+
+### Subir demais componentes do projeto
+
+make start-connect
+
+    docker-compose up -d connect analyser
+    cd connectors
+    curl -X POST -H "Content-Type: application/json" --data @mqtt-source-connector.json http://localhost:8083/connectors
+
+
+## Executar coleta de log no servidor para analisar os logs de ssh
 
 procurar na pasta scripts o script log_coletor.py e definir o endereço do servidor mqtt e o endereço do arquivo de log a ser monitorado, alterando as variáveis MQTT_HOST, LOG_FILE .
 
