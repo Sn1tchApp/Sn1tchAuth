@@ -15,7 +15,7 @@ Para visualizar os alertas, **cadastre-se no grupo do Telegram:**
 
 ## **📂 Clonar Repositório e Executar o Projeto**
 ```bash
-git clone https://github.com/Sn1tchApp/interoperabilidade2.git
+git clone https://github.com/Sn1tchApp/Sn1tchAuth.git
 cd /path/to/repo
 ```
 
