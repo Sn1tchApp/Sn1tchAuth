@@ -1,7 +1,3 @@
-Aqui está o README reformulado, com uma formatação mais atraente e estruturada:
-
----
-
 # **Sn1tchAuth**  
 *Aplicativo criado para a aula de Interoperabilidade 2*
 
