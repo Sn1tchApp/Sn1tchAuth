@@ -39,11 +39,15 @@ make install-docker-compose
 
 ### Criar imagem docker do conector
 
-build-connector
+make build-connector
 
-	cd connectors/kafka-connect-rabbitmq/
-	docker build -t connect .
-    cd ../../
+	docker build -t connect ./connectors/kafka-connect-rabbitmq/
+
+### Criar imagem do docker analyser
+
+make build-analyser
+
+    docker build -t analyser ./analyser
 
 ### Habilitar MQTT no rabbitmq
 
@@ -87,16 +91,12 @@ make check-topics-kafka
 make start-connect
 
     docker-compose up -d connect analyser
-    cd connectors
-    curl -X POST -H "Content-Type: application/json" --data @mqtt-source-connector.json http://localhost:8083/connectors
 
 
-## Executar coleta de log no servidor para analisar os logs de ssh
+## No servidor que deseja coletar o log de ssh
+
+### Executar coleta de log no servidor para analisar os logs de ssh
 
 procurar na pasta scripts o script log_coletor.py e definir o endereço do servidor mqtt e o endereço do arquivo de log a ser monitorado, alterando as variáveis MQTT_HOST, LOG_FILE .
 
 python3 log_colector.py
-
-## Comando para monitorar a fila MQTT na espera de mensagens
-
-mosquitto_sub -h 18.231.148.22 -p 1883 -t "security" -u producer -P sn1tchapp
