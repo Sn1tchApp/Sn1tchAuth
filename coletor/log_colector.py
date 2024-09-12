@@ -2,13 +2,13 @@ import paho.mqtt.client as mqtt
 import time
 
 # Configurações do MQTT
-MQTT_HOST = '172.16.4.62'
-#MQTT_HOST = '18.231.148.22'
+#MQTT_HOST = '172.16.4.62'
+MQTT_HOST = '18.231.148.22'
 MQTT_PORT = 1883
 MQTT_TOPIC = 'security'
 MQTT_USER = 'producer'
 MQTT_PASSWORD = 'sn1tchapp'
-LOG_FILE = '/home/ec2-user/interoperabilidade2/security.log'
+LOG_FILE = '/tmp/security.log'
 
 # Cria uma instância do cliente MQTT
 client = mqtt.Client()
