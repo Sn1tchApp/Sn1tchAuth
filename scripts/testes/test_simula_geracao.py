@@ -1,6 +1,5 @@
 import random
 import time
-import datetime
 
 # Define o caminho do arquivo de log
 log_file_path = "/tmp/security.log"
@@ -11,20 +10,23 @@ ip_addresses = [
 ]
 
 # Usuários comuns para tentativas de login
-usernames = ["root", "admin", "fernando", "wilson"]
+usernames = ["julio", "maria", "joao", "ana", "pedro"]
+
+# Lista de servidores para simular acessos
+servers = ["GUSOLA-02", "SERVER-01", "HOST-03", "PROD-DB", "TEST-SRV"]
 
 # Função para gerar um evento de log SSH
 def generate_ssh_log():
-    timestamp = datetime.datetime.now().strftime('%b %d %H:%M:%S')
+    server = random.choice(servers)
     ip_address = random.choice(ip_addresses)
     port = random.randint(1024, 65535)
     username = random.choice(usernames)
     
     # Probabilidade de falha ou sucesso
     if random.random() < 0.7:  # 70% de chance de falha
-        log_line = f"{timestamp} sshd[{random.randint(10000, 30000)}]: Failed password for {username} from {ip_address} port {port} ssh2\n"
+        log_line = f"{server} sshd[{random.randint(10000, 30000)}]: Failed password for {username} from {ip_address} port {port} ssh2\n"
     else:  # 30% de chance de sucesso
-        log_line = f"{timestamp} sshd[{random.randint(10000, 30000)}]: Accepted password for {username} from {ip_address} port {port} ssh2\n"
+        log_line = f"{server} sshd[{random.randint(10000, 30000)}]: Accepted password for {username} from {ip_address} port {port} ssh2\n"
 
     return log_line
 
