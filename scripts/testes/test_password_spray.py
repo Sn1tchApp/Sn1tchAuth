@@ -63,8 +63,8 @@ def send_test_messages():
         "LNXEXEC-01 sshd[31418]: Failed password for pedro_trajano from 172.24.0.69 port 37244 ssh2",
         "LNXEXEC-01 sshd[31418]: Failed password for henrique from 172.24.0.69 port 37244 ssh2",
         "LNXEXEC-01 sshd[31418]: Failed password for fernando_coelho from 172.24.0.69 port 37244 ssh2",
-        "srv01 sshd[8830]: Failed password for invalid marcos kkls from 172.24.30.40 port 50734 ssh2",
-        "srv01 sshd[8830]: Failed password for invalid michele jkpl from 172.24.30.40 port 50734 ssh2"
+        "srv01 sshd[8830]: Failed password for invalid user marcos from 172.24.30.40 port 50734 ssh2",
+        "srv01 sshd[8830]: Failed password for invalid user michele from 172.24.30.40 port 50734 ssh2"
     ]
 
     for msg in messages:
